@@ -1,0 +1,168 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  password    String?  // For email/password auth
+  emailVerified DateTime?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  events      Event[]
+  notes       Note[]
+  chatLogs    ChatLog[]
+  files       File[]
+  accounts    Account[]
+  sessions    Session[]
+
+  @@map("users")
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime?
+  priority    Priority @default(MEDIUM)
+  category    String?
+  tags        String   // JSON string for SQLite
+  completed   Boolean  @default(false)
+
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("events")
+
+model Note {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  category    String?
+  tags        String   // JSON string for SQLite
+  section     Section  // WORK or LIFE
+  priority    Priority @default(MEDIUM)
+  archived    Boolean  @default(false)
+
+  // AI organization
+  aiGenerated Boolean  @default(false)
+  aiSummary   String?
+
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("notes")
+
+model ChatLog {
+  id          String   @id @default(cuid())
+  message     String
+  response    String?
+  messageType MessageType
+  context     String?    // JSON string for SQLite
+
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+
+  @@map("chat_logs")
+
+model File {
+  id                  String   @id @default(cuid())
+  name                String
+  url                 String
+  size                Int
+  type                String
+  description         String?
+  cloudinaryPublicId  String?
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("files")
+
+// Settings for user preferences
+model UserSettings {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  theme       String   @default("dark")
+  timezone    String   @default("UTC")
+  preferences String?    // JSON string for SQLite
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("user_settings")
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+
+enum Section {
+  WORK
+  LIFE
+
+enum MessageType {
+  USER
+  ASSISTANT
+  SYSTEM
