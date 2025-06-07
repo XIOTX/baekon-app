@@ -1,4 +1,23 @@
-# BÆKON App Development Todos
+# BÆKON App Deployment & Migration Fixes
+
+## Current Status: Ready for Railway Deployment Testing ✅
+
+### High Priority Tasks
+- [x] Fixed corrupted migration file (removed shell commands)
+- [x] Added missing Cloudinary environment variables
+- [x] Committed fixes to GitHub (commit: ebc5ede)
+- [ ] Configure Railway environment variables with real values
+- [ ] Test Railway deployment
+- [ ] Verify file upload functionality works
+
+### Railway Environment Variables Needed:
+- DATABASE_URL=${{ Postgres.DATABASE_URL }}
+- NEXTAUTH_SECRET=<production-secret>
+- NEXTAUTH_URL=<railway-app-url>
+- OPENAI_API_KEY=<real-api-key>
+- CLOUDINARY_CLOUD_NAME=<real-cloud-name>
+- CLOUDINARY_API_KEY=<real-api-key>
+- CLOUDINARY_API_SECRET=<real-secret>
 
 ## Phase 1: Core Infrastructure & Layout ✅
 - [x] Create custom Tailwind config for neon colors and dark theme
