@@ -10,17 +10,3 @@ restartPolicyMaxRetries = 5
 
 [env]
 NODE_ENV = "production"
-EOF  
-cd /home/project && cd /home/project/baekon-app && cat > railway.toml << 'EOF'
-[build]
-command = "bun install && bunx prisma generate && bun run build"
-
-[deploy]
-startCommand = "bunx prisma migrate deploy && bun start"
-healthcheckPath = "/"
-healthcheckTimeout = 100
-restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 5
-
-[env]
-NODE_ENV = "production"
