@@ -11,11 +11,12 @@ const nextConfig = {
     domains: [
       "source.unsplash.com",
       "images.unsplash.com",
-      "ext.same-assets.com", 
+      "ext.same-assets.com",
       "ugc.same-assets.com",
       "res.cloudinary.com",
     ],
   },
+  output: 'standalone',
 };
 
 module.exports = nextConfig;

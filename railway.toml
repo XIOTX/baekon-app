@@ -2,11 +2,12 @@
 command = "bun install && bunx prisma generate && bun run build"
 
 [deploy]
-startCommand = "bunx prisma migrate deploy && bun start"
-healthcheckPath = "/"
-healthcheckTimeout = 100
+startCommand = "bunx prisma migrate deploy && bun run start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 5
+restartPolicyMaxRetries = 10
 
 [env]
 NODE_ENV = "production"
+PORT = "3000"
