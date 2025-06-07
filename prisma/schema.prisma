@@ -1,0 +1,206 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Section {
+  WORK
+  LIFE
+}
+
+enum MessageType {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  password    String?  // For email/password auth
+  emailVerified DateTime?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  events      Event[]
+  notes       Note[]
+  chatLogs    ChatLog[]
+  files       File[]
+  accounts    Account[]
+  sessions    Session[]
+  settings    UserSettings?
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime?
+  location    String?
+  priority    Priority  @default(MEDIUM)
+  section     Section   @default(WORK)
+  completed   Boolean   @default(false)
+  category    String?
+  tags        String    @default("[]") // JSON string for tags
+
+  // Relations
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("events")
+}
+
+model Note {
+  id          String   @id @default(cuid())
+  title       String
+  content     String   @db.Text
+  summary     String?
+  tags        String   @default("[]") // JSON string for tags
+  priority    Priority @default(MEDIUM)
+  section     Section  @default(WORK)
+  isArchived  Boolean  @default(false)
+  category    String?
+  aiGenerated Boolean  @default(false)
+  aiSummary   String?
+
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("notes")
+}
+
+model ChatLog {
+  id          String      @id @default(cuid())
+  sessionId   String
+  message     String      @db.Text
+  response    String?     @db.Text
+  messageType MessageType @default(USER)
+  context     String?     @db.Text // JSON string for context
+  messages    ChatMessage[]
+
+  // Relations
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("chat_logs")
+}
+
+model ChatMessage {
+  id          String      @id @default(cuid())
+  content     String      @db.Text
+  type        MessageType @default(USER)
+
+  // Relations
+  chatLogId   String
+  chatLog     ChatLog     @relation(fields: [chatLogId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime    @default(now())
+
+  @@map("chat_messages")
+}
+
+model File {
+  id                  String   @id @default(cuid())
+  name                String
+  url                 String
+  size                Int
+  type                String
+  description         String?
+  cloudinaryPublicId  String?
+
+  // Relations
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("files")
+}
+
+// Settings for user preferences
+model UserSettings {
+  id          String   @id @default(cuid())
+  theme       String   @default("dark")
+  timezone    String   @default("UTC")
+  preferences String?  // JSON string for additional preferences
+
+  // Relations
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("user_settings")
+}
