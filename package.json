@@ -1,0 +1,10 @@
+{
+  "name": "baekon-root",
+  "private": true,
+  "workspaces": ["baekon-app"],
+  "scripts": {
+    "build": "cd baekon-app && bun run build",
+    "start": "cd baekon-app && bun start",
+    "dev": "cd baekon-app && bun run dev"
+  }
+}

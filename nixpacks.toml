@@ -1,0 +1,14 @@
+[phases.setup]
+nixPkgs = ["nodejs_18", "bun"]
+
+[phases.install]  
+cmds = ["cd baekon-app && bun install"]
+
+[phases.build]
+cmds = ["cd baekon-app && bun run build"]
+
+[start]
+cmd = "cd baekon-app && bun start"
+
+[variables]
+NODE_ENV = "production"

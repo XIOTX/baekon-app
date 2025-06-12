@@ -1,0 +1,19 @@
+electron/
+dist/
+out/
+*.log
+.DS_Store
+.same/
+docs/
+prisma/dev.db
+*.backup
+*.fixed
+# Exclude development files to speed up deployment
+electron/
+docs/
+*.md
+.same/
+uploads/
+*.backup
+*.broken  
+*.fixed
