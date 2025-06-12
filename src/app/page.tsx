@@ -4,7 +4,18 @@ import { useSession, signIn } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 import BaekonApp from './BaekonAppContent'
 
+// 🚫 TEMPORARY AUTH BYPASS - REMOVE WHEN AUTH IS FIXED
+// Set to false to restore normal auth flow
+const BYPASS_AUTH = true;
+const BYPASS_USER_ID = 'cmbmis8d60000p81ypu1paujm'; // Your actual user ID
+
 export default function Page() {
+  // If auth is bypassed, go straight to the app
+  if (BYPASS_AUTH) {
+    return <BaekonApp userId={BYPASS_USER_ID} />
+  }
+
+  // Normal auth flow (preserved for when we re-enable it)
   const { data: session, status } = useSession()
   const [isLoading, setIsLoading] = useState(true)
 
