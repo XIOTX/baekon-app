@@ -1,10 +1,11 @@
 import type { NextAuthOptions } from 'next-auth'
+import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { prisma } from './prisma'
 
 export const authOptions: NextAuthOptions = {
-  // Temporarily use JWT sessions to bypass database session issues on Railway
+  adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET,
   trustHost: true, // Trust Railway's proxy headers
 
@@ -14,9 +15,9 @@ export const authOptions: NextAuthOptions = {
   // Debug URL configuration
   debug: false, // Disable debug to reduce noise
 
-  // Session configuration - use JWT for reliability
+  // Session configuration - use database for reliability
   session: {
-    strategy: 'jwt', // Use JWT sessions temporarily
+    strategy: 'database', // Use database sessions
     maxAge: 30 * 24 * 60 * 60, // 30 days
     updateAge: 24 * 60 * 60,   // 24 hours
   },
@@ -71,20 +72,11 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-        token.email = user.email
-        token.name = user.name
-      }
-      return token
-    },
-
-    async session({ session, token }) {
-      if (token && session?.user) {
-        session.user.id = token.id as string
-        session.user.email = token.email as string
-        session.user.name = token.name as string
+    async session({ session, user }) {
+      if (user && session?.user) {
+        session.user.id = user.id
+        session.user.email = user.email
+        session.user.name = user.name
       }
       return session
     }

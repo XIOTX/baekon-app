@@ -244,8 +244,7 @@ export default function BaekonApp() {
     timestamp: new Date().toISOString()
   });
 
-  // TEMPORARY: Skip auth to test app - TODO: Fix NextAuth redirect loop
-  /*
+  // Show loading state during authentication check
   if (status === "loading") {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-gray-900">
@@ -273,19 +272,37 @@ export default function BaekonApp() {
       </div>
     );
   }
-  */
 
-  // TEMPORARY: Create fake session for testing - use real user ID
-  const fakeSession = {
-    user: { id: 'cmbmis8d60000p81ypu1paujm', email: 'gamebraicher@gmail.com', name: 'Brion' }
-  };
+  // Show authentication required message
+  if (status === "unauthenticated") {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-gray-900">
+        <div className="text-white text-center max-w-md">
+          <h1 className="text-2xl font-bold mb-4">Authentication Required</h1>
+          <p className="text-gray-300 mb-6">Please sign in to access BÆKON.</p>
+          <div className="space-y-4">
+            <a
+              href="/auth/signin"
+              className="block w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+            >
+              Sign In
+            </a>
+            <div className="text-xs text-gray-500 space-y-1">
+              <p>Status: {status}</p>
+              <p>Session: {session ? 'Present' : 'None'}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Show app if authenticated
-  if (fakeSession) {
+  if (session) {
     console.log('✅ Authenticated user accessing BÆKON:', {
-      userId: fakeSession.user.id,
-      userEmail: fakeSession.user.email,
-      userName: fakeSession.user.name
+      userId: session.user.id,
+      userEmail: session.user.email,
+      userName: session.user.name
     });
   }
 
@@ -365,7 +382,7 @@ export default function BaekonApp() {
               updateEvent={updateEvent}
               deleteEvent={deleteEvent}
               fetchEvents={fetchEvents}
-              userId={fakeSession.user.id}
+              userId={session.user.id}
             />
           </div>
 
@@ -387,7 +404,7 @@ export default function BaekonApp() {
             messages={messages}
             sendMessage={sendMessage}
             loading={chatLoading}
-            userId={fakeSession.user.id}
+            userId={session.user.id}
             aiContext={createAIContext()}
             hourEvents={hourEvents}
             setHourEvents={setHourEvents}
