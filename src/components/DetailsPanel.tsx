@@ -151,88 +151,172 @@ export default function DetailsPanel({ selectedTimeSlot, events, currentWeekDate
 
   return (
     <div className="h-full w-full p-2">
-      <div className="neon-panel h-full p-3 flex flex-col relative z-10 overflow-hidden">
+      <div
+        className="h-full relative overflow-hidden rounded-lg"
+        style={{
+          boxShadow: '0px 0px 37px -10px #C080FF inset',
+          outline: '1px #C080FF solid',
+          outlineOffset: '-1px'
+        }}
+      >
 
-        {/* Image Section - Top Half */}
-        <div className="h-1/2 mb-3 flex-shrink-0">
-          <div
-            className="w-full h-full border border-gray-600 rounded-lg overflow-hidden cursor-pointer hover:border-neon-aqua transition-colors grid-bg flex items-center justify-center"
-            onClick={() => details.image && setIsImageExpanded(true)}
-          >
-            {details.image ? (
-              <img
-                src={details.image}
-                alt="Event reference"
-                className="w-full h-full object-cover"
-              />
+        {/* Main Visual Area - Top Section */}
+        <div
+          className="absolute top-7 left-7 right-7 rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+          style={{
+            height: '45%',
+            boxShadow: '0px 0px 37px -10px #C080FF inset',
+            borderColor: '#C080FF',
+            background: 'linear-gradient(135deg, rgba(192, 128, 255, 0.1) 0%, rgba(255, 89, 131, 0.1) 100%)'
+          }}
+          onClick={() => details.image && setIsImageExpanded(true)}
+        >
+          {details.image ? (
+            <img
+              src={details.image}
+              alt="Event reference"
+              className="w-full h-full object-cover rounded-lg"
+            />
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center p-4 text-center">
+              <div
+                className="text-2xl mb-2 font-mono"
+                style={{
+                  color: '#C080FF',
+                  textShadow: '0px 0px 12px rgba(192, 128, 255, 0.8)'
+                }}
+              >
+                {selectedTimeSlot ? '●' : '○'}
+              </div>
+              <div
+                className="text-lg font-mono mb-1"
+                style={{
+                  color: '#F1E2FF',
+                  textShadow: '0px 0px 8px rgba(255, 255, 255, 0.8)'
+                }}
+              >
+                {details.title}
+              </div>
+              <div
+                className="text-sm font-mono opacity-80"
+                style={{
+                  color: '#C080FF',
+                  textShadow: '0px 0px 6px rgba(192, 128, 255, 0.6)'
+                }}
+              >
+                {details.duration}
+              </div>
+              <div
+                className="text-xs mt-2 font-mono opacity-60"
+                style={{ color: '#9CA3AF' }}
+              >
+                {schedView.toUpperCase()} VIEW
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Details Section - Activities */}
+        <div
+          className="absolute left-7 right-7 text-center"
+          style={{
+            top: '51%',
+            height: '32%',
+            color: '#FF5983',
+            fontSize: '14px',
+            fontFamily: 'monospace',
+            fontWeight: '400',
+            lineHeight: '18px',
+            textShadow: '0px 0px 18px rgba(255, 89, 131, 1.00)',
+            opacity: 0.9
+          }}
+        >
+          <div className="h-full overflow-y-auto">
+            {events.length > 0 ? (
+              <div className="space-y-2">
+                <div className="text-xs opacity-70 mb-2">ACTIVITIES & EVENTS</div>
+                {events.slice(0, 3).map((event, index) => (
+                  <div
+                    key={index}
+                    className="bg-pink-500/10 backdrop-blur-sm border border-pink-500/30 rounded-md p-2 text-sm"
+                    style={{ textShadow: '0px 0px 8px rgba(255, 89, 131, 0.8)' }}
+                  >
+                    {event}
+                  </div>
+                ))}
+                {events.length > 3 && (
+                  <div className="text-xs opacity-60 mt-2">
+                    +{events.length - 3} more activities...
+                  </div>
+                )}
+
+                {/* Priority Indicator */}
+                <div className="flex justify-center mt-3 space-x-1">
+                  {['low', 'medium', 'high'].map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => setSelectedPriority(level as 'low' | 'medium' | 'high')}
+                      className={`px-2 py-1 text-xs rounded transition-all duration-200 ${
+                        selectedPriority === level
+                          ? 'bg-pink-500/30 border border-pink-400'
+                          : 'bg-pink-500/10 border border-pink-500/20 hover:bg-pink-500/20'
+                      }`}
+                      style={{
+                        color: '#FF5983',
+                        textShadow: selectedPriority === level ? '0px 0px 8px rgba(255, 89, 131, 1)' : 'none'
+                      }}
+                    >
+                      {level.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ) : (
-              <div className="text-center text-gray-500">
-                <div className="text-4xl mb-2">🖼️</div>
-                <div className="text-sm">No image</div>
+              <div className="flex flex-col items-center justify-center h-full">
+                <div className="text-sm mb-2">
+                  {selectedTimeSlot ? 'Available Time Block' : 'Select Time to View Details'}
+                </div>
+                <div className="text-xs opacity-70 mb-3">
+                  {selectedTimeSlot ? 'Ready for scheduling activities' : 'Choose a quarter, hour, or day'}
+                </div>
+
+                {/* AI Suggestions when no events */}
+                {details.suggestions.length > 0 && selectedTimeSlot && (
+                  <div className="space-y-1">
+                    {details.suggestions.slice(0, 2).map((suggestion, index) => (
+                      <div
+                        key={index}
+                        className="text-xs bg-pink-500/10 border border-pink-500/20 rounded px-2 py-1"
+                        style={{ textShadow: '0px 0px 6px rgba(255, 89, 131, 0.6)' }}
+                      >
+                        • {suggestion}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
 
-        {/* Details Section - Bottom Half */}
-        <div className="h-1/2 overflow-y-auto space-y-2 text-sm">
-
-          {/* Title */}
-          <div>
-            <h3 className="text-neon-pink font-semibold text-sm neon-text mb-1 font-cal-sans">
-              {details.title}
-            </h3>
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="text-neon-blue text-xs font-medium font-red-hat">Description</label>
-            <p className="text-gray-300 text-base mt-1 font-red-hat leading-relaxed">
-              {details.description}
-            </p>
-          </div>
-
-          {/* Priority */}
-          <div>
-            <label className="text-neon-blue text-xs font-medium font-red-hat">Priority (AI Analyzed)</label>
-            <div className="flex space-x-1 mt-1">
-              {['low', 'medium', 'high'].map((level) => (
-                <button
-                  key={level}
-                  onClick={() => setSelectedPriority(level as 'low' | 'medium' | 'high')}
-                  className={`px-2 py-1 text-xs rounded border transition-all duration-200 ${
-                    selectedPriority === level
-                      ? 'border-neon-purple text-neon-purple bg-neon-purple bg-opacity-20'
-                      : 'border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-300'
-                  }`}
-                >
-                  {level.toUpperCase()}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* AI Suggestions */}
-          {details.suggestions.length > 0 && (
-            <div>
-              <label className="text-neon-blue text-xs font-medium font-red-hat">AI Suggestions</label>
-              <ul className="mt-1 space-y-1">
-                {details.suggestions.map((suggestion, index) => (
-                  <li key={index} className="text-gray-300 text-xs flex items-start">
-                    <span className="text-neon-green mr-2">•</span>
-                    {suggestion}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Context */}
-          <div>
-            <label className="text-neon-blue text-xs font-medium font-red-hat">Context</label>
-            <p className="text-gray-400 text-xs mt-1 leading-relaxed font-red-hat">
+        {/* Secondary Details - Bottom */}
+        <div
+          className="absolute left-7 right-7 bottom-4 text-center"
+          style={{
+            height: '12%',
+            color: '#F1E2FF',
+            fontSize: '12px',
+            fontFamily: 'monospace',
+            fontWeight: '400',
+            lineHeight: '14px',
+            textShadow: '0px 0px 8px rgba(255, 255, 255, 1.00)',
+            opacity: 0.8
+          }}
+        >
+          <div className="h-full flex items-center justify-center">
+            <div className="text-xs leading-tight">
               {details.context}
-            </p>
+            </div>
           </div>
         </div>
 
