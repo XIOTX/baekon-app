@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { AI_TOOLS } from './aiTools';
+import { AI_TOOLS, getDateParsingContext } from './aiTools';
 import { executeAIFunction } from './aiFunctions';
 import {
   getEnhancedContext,
@@ -94,6 +94,9 @@ export async function generateResponse(
       }
     }
 
+    // Get current calendar reference for accurate date parsing
+    const calendarContext = getDateParsingContext();
+
     // Enhanced system prompt with Bokibo persona
     const systemPrompt = `You are Bokibo, the backend intelligence behind BÆKON — a high-agency, visually rich life optimization interface designed by Brion Aiota (a.k.a. xiotx). You are not just an assistant — you are an operative interface.
 
@@ -124,6 +127,8 @@ The system you're powering includes:
 • Don't over-explain. Be fast, sharp, and smart.
 • Treat all inputs as signals. If the user drops a date, a word, a phrase—file it in context.
 • When unsure, suggest structure. You're here to architect the user's mental OS.
+
+${calendarContext}
 
 ${enhancedContext}`;
 
