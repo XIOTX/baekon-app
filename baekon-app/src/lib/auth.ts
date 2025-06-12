@@ -8,8 +8,11 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   trustHost: true, // Trust Railway's proxy headers
 
+  // Explicit URL configuration
+  url: process.env.NEXTAUTH_URL,
+
   // Debug URL configuration
-  debug: true,
+  debug: false, // Disable debug to reduce noise
 
   // Session configuration - use JWT for reliability
   session: {
@@ -26,10 +29,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        console.log('Authorize function called with:', { email: credentials?.email });
-
         if (!credentials?.email || !credentials?.password) {
-          console.log('Missing credentials');
           return null
         }
 
@@ -41,7 +41,6 @@ export const authOptions: NextAuthOptions = {
           })
 
           if (!user || !user.password) {
-            console.log('User not found or no password');
             return null
           }
 
@@ -51,11 +50,9 @@ export const authOptions: NextAuthOptions = {
           )
 
           if (!isPasswordValid) {
-            console.log('Invalid password');
             return null
           }
 
-          console.log('User authenticated successfully:', { id: user.id, email: user.email });
           return {
             id: user.id,
             email: user.email,
@@ -75,56 +72,20 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
-      console.log('JWT callback start:', {
-        hasToken: !!token,
-        hasUser: !!user,
-        tokenEmail: token?.email,
-        userEmail: user?.email
-      });
-
-      // Add user info to JWT token on first sign in
       if (user) {
         token.id = user.id
         token.email = user.email
         token.name = user.name
-        console.log('JWT token updated with user data:', {
-          userId: token.id,
-          userEmail: token.email
-        });
       }
-
-      console.log('JWT callback result:', {
-        hasToken: !!token,
-        userId: token?.id,
-        userEmail: token?.email
-      });
       return token
     },
 
     async session({ session, token }) {
-      console.log('Session callback start:', {
-        hasSession: !!session,
-        hasToken: !!token,
-        sessionUserEmail: session?.user?.email,
-        tokenEmail: token?.email
-      });
-
-      // Add user info from JWT token to session
       if (token && session?.user) {
         session.user.id = token.id as string
         session.user.email = token.email as string
         session.user.name = token.name as string
-        console.log('Session updated with token data:', {
-          userId: session.user.id,
-          userEmail: session.user.email
-        });
       }
-
-      console.log('Session callback result:', {
-        hasSession: !!session,
-        userId: session?.user?.id,
-        userEmail: session?.user?.email
-      });
       return session
     }
   }
