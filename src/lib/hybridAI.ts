@@ -24,13 +24,24 @@ export class HybridAIOrchestrator {
   private claude: Anthropic;
 
   constructor() {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY environment variable is required for hybrid AI');
+    }
+
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
 
-    this.claude = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
-    });
+    // Claude is optional - will fallback gracefully if not available
+    if (process.env.ANTHROPIC_API_KEY) {
+      this.claude = new Anthropic({
+        apiKey: process.env.ANTHROPIC_API_KEY,
+      });
+    } else {
+      console.warn('ANTHROPIC_API_KEY not set - hybrid AI will fallback to GPT-4 only');
+      // Set claude to null so we can check for it later
+      this.claude = null as any;
+    }
   }
 
   /**
@@ -65,6 +76,12 @@ export class HybridAIOrchestrator {
     context: any,
     userId: string
   ): Promise<HybridAIResponse> {
+
+    // Check if Claude is available, fallback to GPT-4 if not
+    if (!this.claude) {
+      console.log('Claude not available, falling back to GPT-4 execution flow');
+      return await this.gptExecutionFlow(message, context, userId);
+    }
 
     // Step 1: Claude analyzes and reasons
     const calendarContext = getDateParsingContext();
