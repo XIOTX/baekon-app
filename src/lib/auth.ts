@@ -13,7 +13,7 @@ export const authOptions: NextAuthOptions = {
   url: process.env.NEXTAUTH_URL,
 
   // Debug URL configuration
-  debug: false, // Disable debug to reduce noise
+  debug: true, // Enable debug to see what's happening
 
   // Session configuration - use JWT for credentials provider
   session: {
@@ -60,7 +60,9 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
           }
         } catch (error) {
-          console.error('Database error during auth:', error)
+          console.error('[NextAuth] Database error during auth:', error)
+          console.error('[NextAuth] Auth attempt for email:', credentials.email)
+          console.error('[NextAuth] Database URL configured:', !!process.env.DATABASE_URL)
           return null
         }
       }
