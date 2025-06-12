@@ -15,9 +15,9 @@ export const authOptions: NextAuthOptions = {
   // Debug URL configuration
   debug: false, // Disable debug to reduce noise
 
-  // Session configuration - use database for reliability
+  // Session configuration - use JWT for credentials provider
   session: {
-    strategy: 'database', // Use database sessions
+    strategy: 'jwt', // Use JWT sessions for credentials provider
     maxAge: 30 * 24 * 60 * 60, // 30 days
     updateAge: 24 * 60 * 60,   // 24 hours
   },
@@ -72,11 +72,19 @@ export const authOptions: NextAuthOptions = {
   },
 
   callbacks: {
-    async session({ session, user }) {
-      if (user && session?.user) {
-        session.user.id = user.id
-        session.user.email = user.email
-        session.user.name = user.name
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id
+        token.email = user.email
+        token.name = user.name
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (token && session?.user) {
+        session.user.id = token.sub as string
+        session.user.email = token.email as string
+        session.user.name = token.name as string
       }
       return session
     }
