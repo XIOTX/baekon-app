@@ -275,9 +275,9 @@ export default function BaekonApp() {
   }
   */
 
-  // TEMPORARY: Create fake session for testing
+  // TEMPORARY: Create fake session for testing - use real user ID
   const fakeSession = {
-    user: { id: 'test-user', email: 'test@test.com', name: 'Test User' }
+    user: { id: 'clcx8x1234567890abcdef', email: 'gamebraicher@gmail.com', name: 'Brion Aiota' }
   };
 
   // Show app if authenticated
