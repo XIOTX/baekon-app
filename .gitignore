@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+baekon-app/node_modules/
+
+# Next.js build output
+baekon-app/.next/
+baekon-app/out/
+
+# Production builds
+baekon-app/build/
+baekon-app/dist/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Cache
+.cache/
+baekon-app/.cache/
+
+# Build caches
+baekon-app/.next/cache/
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Uploads
+uploads/
