@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import BoardView from "./BoardView";
+import BoardWrapper from "./BoardWrapper";
 
 interface Box {
   id: string;
@@ -246,10 +246,11 @@ export default function LifeView({ userId, activeView, selectedBoxId }: LifeView
         )}
 
         {/* Board View */}
-        <BoardView
+        <BoardWrapper
           boxes={boxes}
           zoom={zoom}
           onBoxMove={handleBoxMove}
+          section="LIFE"
           onBoxClick={(id) => {
             if (connectionMode) {
               if (!selectedBoxForConnection) {
